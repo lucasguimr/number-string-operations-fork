@@ -466,47 +466,50 @@ switch(tp) {
     }    
     break;
   case "strings":
-    op1 = makeString(data.op1);
-    var op2s = makeString(data.op2 || "");
-    var op3s = makeString(data.op3 || "");
-    const sf = data.stringMethodName;
-    switch(sf) {
-      case "indexOf": rs = op1.indexOf(op2s); break;
-      case "lastIndexOf": rs = op1.lastIndexOf(op2s); break;
-      case "split": rs = op1.split(op2s); break;
-      case "splitSpecial": 
-        rs = op1.split(op2s); 
-        rs = (rs.length >= op3) ? rs[op3s] : undefined;
-        break;
-      case "toLowerCase": rs = op1.toLowerCase(); break;
-      case "toUpperCase": rs = op1.toUpperCase(); break;
-      case "replace": rs = op1.replace(op2s, op3s); break;
-      case "replaceAll": rs = replaceAll(op1, op2s, op3s); break;
-      case "slice": rs = op1.slice(op2, op3); break;
-      case "substr": rs = op1.substring(op2, op3+op2); break;
-      case "substring": rs = op1.substring(op2, op3); break;
-      case "toFixed": var mul = Math.pow(10, op2) ; rs = makeNumber(Math.round(op1*mul) / mul); break;
-      case "toNumber": 
-        var idxComma = op1.indexOf(","); 
-        var idxDot = op1.indexOf(".");
-        if ((idxComma > 0) && (idxDot > 0)) {
-          if (idxComma > idxDot) 
-            rs = replaceAll(replaceAll(op1, ".", ""), ",", ".");
-          elseif
-            rs = replaceAll(op1, " ", ""); 
-          else
-            rs = replaceAll(op1, ",", ""); 
-        } else if (idxComma > 0)
-          rs = replaceAll(op1, ",", ".");
-        rs = makeNumber(rs);
-        break;
-      case "match": var fnd = op1.match(op2s);          
-        if (fnd) { rs = fnd[0]; }    
-        break;
-      case "sha256": rs = sha256Sync(op1); break;  
-      case "base64": rs = toBase64(op1); break;  
-    }    
-    break;
+  op1 = makeString(data.op1);
+  var op2s = makeString(data.op2 || "");
+  var op3s = makeString(data.op3 || "");
+  const sf = data.stringMethodName;
+  switch(sf) {
+    case "indexOf": rs = op1.indexOf(op2s); break;
+    case "lastIndexOf": rs = op1.lastIndexOf(op2s); break;
+    case "split": rs = op1.split(op2s); break;
+    case "splitSpecial": 
+      rs = op1.split(op2s); 
+      rs = (rs.length > op3) ? rs[parseInt(op3)] : undefined;
+      break;
+    case "toLowerCase": rs = op1.toLowerCase(); break;
+    case "toUpperCase": rs = op1.toUpperCase(); break;
+    case "replace": rs = op1.replace(op2s, op3s); break;
+    case "replaceAll": rs = replaceAll(op1, op2s, op3s); break;
+    case "slice": rs = op1.slice(op2, op3); break;
+    case "substr": rs = op1.substr(op2, op3); break; // Corrigido para usar substr ao invés de substring para o segundo parâmetro ser o comprimento
+    case "substring": rs = op1.substring(op2, op3); break;
+    case "toFixed": var mul = Math.pow(10, op2); rs = makeNumber(Math.round(op1*mul) / mul); break;
+    case "toNumber": 
+      var idxComma = op1.indexOf(","); 
+      var idxDot = op1.indexOf(".");
+      if ((idxComma > 0) && (idxDot > 0)) {
+        if (idxComma > idxDot) { 
+          rs = replaceAll(replaceAll(op1, ".", ""), ",", ".");
+        } else {
+          rs = replaceAll(op1, ",", ""); 
+        }
+      } else if (idxComma > 0) {
+        rs = replaceAll(op1, ",", ".");
+      } else {
+        rs = replaceAll(op1, " ", ""); // Esta linha é para remover espaços, mas estava no lugar errado antes.
+      }
+      rs = makeNumber(rs);
+      break;
+    case "match": var fnd = op1.match(op2s);          
+      if (fnd) { rs = fnd[0]; }    
+      break;
+    case "sha256": rs = sha256Sync(op1); break;  
+    case "base64": rs = toBase64(op1); break;  
+  }
+  break;
+
 }
       
 const rt = data.resultTransformation;
