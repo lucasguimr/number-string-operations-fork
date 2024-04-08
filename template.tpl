@@ -492,6 +492,8 @@ switch(tp) {
         if ((idxComma > 0) && (idxDot > 0)) {
           if (idxComma > idxDot) 
             rs = replaceAll(replaceAll(op1, ".", ""), ",", ".");
+          elseif
+            rs = replaceAll(op1, " ", ""); 
           else
             rs = replaceAll(op1, ",", ""); 
         } else if (idxComma > 0)
